@@ -10,12 +10,12 @@ exports.createUser = asyncHandler(async(req,res) => {
 
     if(!req.file) return errorResponse(res, "image is required", 400);
 
-    const uploadStream = await cloudinary.uploader.upload_stream(
+    const uploadStream = cloudinary.uploader.upload_stream(
         {folder:'users'},
         async (error, result) => {
             if(error) return errorResponse(res, error.message, 500);
 
-            const newUser = await user.create({
+            const newUser = await User.create({
                 name,
                 image:{
                     public_id: result.public_id,

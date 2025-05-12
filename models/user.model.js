@@ -7,9 +7,15 @@ const userSchema = new mongoose.Schema({
         trim:true,
     },
     image:{
-        public_id:String,
-        url:string,
+        public_id :{
+            type:String,
+            required:true,
+        },
+        url:{
+            type:String,
+            required:true,
+        }
     },
-});
-const User = mongoose.model('User', userSchema);
+},{timestamps:true});
+const User = mongoose.model('user', userSchema);
 module.exports = User;
