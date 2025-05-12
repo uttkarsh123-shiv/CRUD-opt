@@ -1,20 +1,21 @@
-const user = require("../models/user.model.js");
+const User = require("../models/user.model.js");
 const asyncHandler = require("../handlers/asyncHandler.js")
 const cloudinary = require("../config/cloudinary.js")
 const {successResponse, errorResponse} = require("../utils/apiResponse.js")
-const {USER_CREATED, USER_NOT_FOUND} = require("../constants/index.js")
+const {USER_CREATED, USER_NOT_FOUND} = require("../constants/index.js");
+const { UploadStream } = require("cloudinary");
 
 exports.createUser = asyncHandler(async(req,res) => {
     const {name} = req.body;
 
     if(!req.file) return errorResponse(res, "image is required", 400);
 
-    const result = await cloudinary.uploader.upload_stream(
+    const uploadStream = await cloudinary.uploader.upload_stream(
         {folder:'users'},
         async (error, result) => {
             if(error) return errorResponse(res, error.message, 500);
 
-            const user = await user.create({
+            const newUser = await user.create({
                 name,
                 image:{
                     public_id: result.public_id,
@@ -22,10 +23,11 @@ exports.createUser = asyncHandler(async(req,res) => {
                 }
             })
 
-            return successResponse(res, USER_CREATED, user);
+            return successResponse(res, USER_CREATED, newUser);
         }
-    )
+    );
 
-    result.end(req.file.buffer);
+   uploadStream.end(req.file.buffer);
 
 });
+
